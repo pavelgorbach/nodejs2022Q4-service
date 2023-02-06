@@ -3,12 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   users: User[] = [];
 
   findAll() {
@@ -32,7 +33,7 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
-    const user = this.users.find((user) => user.id === id);
+    const user = this.users.find((u) => u.id === id);
 
     if (!user) {
       throw new NotFoundException(`Not found`);

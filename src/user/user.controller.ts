@@ -13,14 +13,14 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 
-import { UsersService } from './user.service';
+import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
-export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   findAll() {
