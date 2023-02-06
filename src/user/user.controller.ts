@@ -1,4 +1,3 @@
-import { ParseUUIDPipe } from '@nestjs/common/pipes';
 import {
   Controller,
   Get,
@@ -11,6 +10,7 @@ import {
   HttpStatus,
   UseInterceptors,
   ClassSerializerInterceptor,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
@@ -49,6 +49,6 @@ export class UserController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   delete(@Param('id', new ParseUUIDPipe()) id: string) {
-    this.userService.delete(id);
+    this.userService.remove(id);
   }
 }

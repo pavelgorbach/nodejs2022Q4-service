@@ -48,7 +48,7 @@ export class UserService {
     return user;
   }
 
-  delete(id: string) {
+  remove(id: string) {
     const idx = this.users.findIndex((u) => u.id === id);
 
     if (idx === -1) {

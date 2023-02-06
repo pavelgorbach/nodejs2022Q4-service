@@ -12,7 +12,7 @@ export class Artist {
   }
 
   update(data: Partial<Artist>) {
-    this.name = data.name;
-    this.grammy = data.grammy;
+    this.name = data.name || this.name;
+    this.grammy = data.grammy || this.grammy;
   }
 }
