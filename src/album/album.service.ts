@@ -1,19 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { Db } from '../db/db';
+import { FavsService } from '../favs/favs.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
-  albums: Album[] = [];
+  constructor(private db: Db, private favsService: FavsService) {}
 
   findAll() {
-    return this.albums;
+    return this.db.albums;
   }
 
   findOne(id: string) {
-    const user = this.albums.find((a) => a.id === id);
+    const user = this.db.albums.find((a) => a.id === id);
 
     if (!user) {
       throw new NotFoundException(`Not found`);
@@ -29,12 +31,12 @@ export class AlbumService {
       createAlbumDto.artistId,
     );
 
-    this.albums.push(album);
+    this.db.albums.push(album);
     return album;
   }
 
   update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const album = this.albums.find((a) => a.id === id);
+    const album = this.db.albums.find((a) => a.id === id);
 
     if (!album) {
       throw new NotFoundException(`Not found`);
@@ -46,12 +48,23 @@ export class AlbumService {
   }
 
   remove(id: string) {
-    const idx = this.albums.findIndex((a) => a.id === id);
+    const idx = this.db.albums.findIndex((a) => a.id === id);
 
     if (idx === -1) {
       throw new NotFoundException(`Not found`);
     }
 
-    this.albums.splice(idx, 1);
+    const inFavorites = this.favsService.findOne(id);
+
+    if (!inFavorites) {
+      this.favsService.removeAlbum(id);
+    }
+
+    const tracks = this.db.tracks.filter((track) => track.albumId === id);
+    tracks.forEach((track) => {
+      track.albumId = null;
+    });
+
+    this.db.albums.splice(idx, 1);
   }
 }

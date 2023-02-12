@@ -26,4 +26,8 @@ export class Track {
     this.albumId = data.albumId || this.albumId;
     this.duration = data.duration || this.duration;
   }
+
+  public removeAlbum() {
+    this.albumId = null;
+  }
 }

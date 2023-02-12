@@ -1,19 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { Db } from '../db/db';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TrackService {
-  tracks: Track[] = [];
+  constructor(private db: Db) {}
 
   findAll() {
-    return this.tracks;
+    return this.db.tracks;
   }
 
   findOne(id: string) {
-    const track = this.tracks.find((t) => t.id === id);
+    const track = this.db.tracks.find((t) => t.id === id);
 
     if (!track) {
       throw new NotFoundException(`Not found`);
@@ -29,12 +30,12 @@ export class TrackService {
       createTrackDto.albumId,
       createTrackDto.duration,
     );
-    this.tracks.push(track);
+    this.db.tracks.push(track);
     return track;
   }
 
   update(id: string, updateTrackDto: UpdateTrackDto) {
-    const track = this.tracks.find((t) => t.id === id);
+    const track = this.db.tracks.find((t) => t.id === id);
 
     if (!track) {
       throw new NotFoundException(`Not found`);
@@ -46,12 +47,12 @@ export class TrackService {
   }
 
   remove(id: string) {
-    const idx = this.tracks.findIndex((t) => t.id === id);
+    const idx = this.db.tracks.findIndex((t) => t.id === id);
 
     if (idx === -1) {
       throw new NotFoundException(`Not found`);
     }
 
-    this.tracks.splice(idx, 1);
+    this.db.tracks.splice(idx, 1);
   }
 }
