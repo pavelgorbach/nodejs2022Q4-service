@@ -53,3 +53,13 @@ npm run lint
 ```
 npm run format
 ```
+
+## Run Docker
+
+Install docker and docker-compose using the instruction https://docs.docker.com/get-docker/
+
+Run command:
+
+```bash
+$user: docker-compose up
+```
