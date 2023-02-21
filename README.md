@@ -8,9 +8,9 @@
 ## Running 
 1. clone repo: `git clone https://github.com/pavelgorbach/nodejs2022Q4-service.git`
 2. go to project forlder: `cd nodejs2022Q4-service.git`
-3. checkout to dev branch `git checkout dev`
+3. checkout to postgre-orm branch `git checkout postgre-orm`
 4. install dependencies `npm install`
-5. run app `npm start`
+5. run app `npm start` or `npm run start:dev`
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
@@ -60,6 +60,6 @@ Install docker and docker-compose using the instruction https://docs.docker.com/
 
 Run command:
 
-```bash
-$user: docker-compose up
+```
+npm run docker
 ```
