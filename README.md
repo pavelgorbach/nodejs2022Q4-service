@@ -5,23 +5,12 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading
-
-```
-git clone {repository URL}
-```
-
-## Installing NPM modules
-
-```
-npm install
-```
-
-## Running application
-
-```
-npm start
-```
+## Running 
+1. clone repo: `git clone https://github.com/pavelgorbach/nodejs2022Q4-service.git`
+2. go to project forlder: `cd nodejs2022Q4-service.git`
+3. checkout to postgre-orm branch `git checkout postgre-orm`
+4. install dependencies `npm install`
+5. run app `npm start` or `npm run start:dev`
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
@@ -65,8 +54,12 @@ npm run lint
 npm run format
 ```
 
-### Debugging in VSCode
+## Run Docker
 
-Press <kbd>F5</kbd> to debug.
+Install docker and docker-compose using the instruction https://docs.docker.com/get-docker/
 
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+Run command:
+
+```
+npm run docker
+```
