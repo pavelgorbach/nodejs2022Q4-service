@@ -4,6 +4,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { readFile } from 'fs/promises';
 import * as yaml from 'yaml';
+import 'dotenv/config';
 
 import { AppModule } from './app.module';
 
@@ -19,7 +20,7 @@ async function bootstrap() {
   const schema = yaml.parse(apiFile);
   SwaggerModule.setup('doc', app, schema);
 
-  await app.listen(PORT);
+  await app.listen(PORT, () => console.log(`Listening on port = ${PORT}`));
 }
 
 bootstrap();

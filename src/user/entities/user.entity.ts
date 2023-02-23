@@ -1,31 +1,39 @@
-import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
+import { Exclude, Transform } from 'class-transformer';
 
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  VersionColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+@Entity()
 export class User {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
-  login: string;
-  version: number;
-  createdAt: number;
-  updatedAt: number;
 
+  @Column({ unique: true })
+  login: string;
+
+  @VersionColumn()
+  version: number;
+
+  @Transform(({ value }) => new Date(value).getTime())
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @Transform(({ value }) => new Date(value).getTime())
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
+  @Column()
   @Exclude()
   password: string;
 
   constructor(login: string, password: string) {
     this.login = login;
     this.password = password;
-
-    this.id = uuidv4();
-    this.version = 1;
-    this.createdAt = Date.now();
-    this.updatedAt = Date.now();
-  }
-
-  update(data: Partial<User>) {
-    this.login = data.login || this.login;
-    this.password = data.password || this.password;
-
-    this.version += 1;
-    this.updatedAt = Date.now();
   }
 }
