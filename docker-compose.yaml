@@ -13,7 +13,6 @@ services:
       - app-network
     volumes:
       - ./src:/app/src
-    command: sh -c "npm run migration:generate && npm run start:dev"
 
   db:
     container_name: db

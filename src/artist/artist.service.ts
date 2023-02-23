@@ -1,21 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { Db } from '../db/db';
-import { FavsService } from '../favs/favs.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 
 @Injectable()
 export class ArtistService {
-  constructor(private db: Db, private favsService: FavsService) {}
+  constructor(
+    @InjectRepository(Artist)
+    private artistRepository: Repository<Artist>,
+  ) {}
 
-  findAll() {
-    return this.db.artists;
+  async findAll() {
+    return await this.artistRepository.find();
   }
 
-  findOne(id: string) {
-    const artist = this.db.artists.find((a) => a.id === id);
+  async findOne(id: string) {
+    const artist = await this.artistRepository.findOneBy({ id });
 
     if (!artist) {
       throw new NotFoundException(`Not found`);
@@ -24,36 +27,21 @@ export class ArtistService {
     return artist;
   }
 
-  create(createArtistDto: CreateArtistDto) {
-    const artist = new Artist(createArtistDto.name, createArtistDto.grammy);
-    this.db.artists.push(artist);
-    return artist;
+  async create(createArtistDto: CreateArtistDto) {
+    return await this.artistRepository.save(createArtistDto);
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto) {
-    const artist = this.db.artists.find((a) => a.id === id);
-
-    if (!artist) {
-      throw new NotFoundException(`Not found`);
-    }
-
-    artist.update(updateArtistDto);
-
-    return artist;
+  async update(id: string, updateArtistDto: UpdateArtistDto) {
+    const artist = await this.findOne(id);
+    return await this.artistRepository.save({ ...artist, ...updateArtistDto });
   }
 
-  remove(id: string) {
-    const idx = this.db.artists.findIndex((u) => u.id === id);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.artistRepository.delete(id);
+  }
 
-    if (idx === -1) {
-      throw new NotFoundException(`Not found`);
-    }
-
-    const tracks = this.db.tracks.filter((track) => track.artistId === id);
-    tracks.forEach((track) => {
-      track.artistId = null;
-    });
-
-    this.db.artists.splice(idx, 1);
+  async isExists(id: string) {
+    return await this.artistRepository.findOneBy({ id });
   }
 }

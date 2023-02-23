@@ -1,33 +1,36 @@
-import { v4 as uuid } from 'uuid';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
+import { Artist } from './../../artist/entities/artist.entity';
+import { Album } from './../../album/entities/album.entity';
+import { Fav } from './../../favs/entities/fav.entity';
+
+@Entity()
 export class Track {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
   name: string;
+
+  @Column({ type: 'uuid', nullable: true })
   artistId: string | null;
+
+  @Column({ type: 'uuid', nullable: true })
   albumId: string | null;
+
+  @Column()
   duration: number;
 
-  constructor(
-    name: string,
-    artistId: string | null,
-    albumId: string | null,
-    duration: number,
-  ) {
-    this.id = uuid();
-    this.name = name;
-    this.artistId = artistId;
-    this.albumId = albumId;
-    this.duration = duration;
-  }
+  @ManyToOne(() => Artist, (artist) => artist.tracks, {
+    onDelete: 'SET NULL',
+  })
+  artist: Artist;
 
-  public update(data: Partial<Track>) {
-    this.name = data.name || this.name;
-    this.artistId = data.artistId || this.artistId;
-    this.albumId = data.albumId || this.albumId;
-    this.duration = data.duration || this.duration;
-  }
+  @ManyToOne(() => Album, (album) => album.tracks, {
+    onDelete: 'SET NULL',
+  })
+  album: Album;
 
-  public removeAlbum() {
-    this.albumId = null;
-  }
+  @ManyToOne(() => Fav, (favorites) => favorites.tracks)
+  favorites: Fav;
 }

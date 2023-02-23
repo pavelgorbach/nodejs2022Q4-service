@@ -1,70 +1,47 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { Db } from '../db/db';
-import { FavsService } from '../favs/favs.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
-  constructor(private db: Db, private favsService: FavsService) {}
+  constructor(
+    @InjectRepository(Album)
+    private albumRepository: Repository<Album>,
+  ) {}
 
-  findAll() {
-    return this.db.albums;
+  async findAll() {
+    return await this.albumRepository.find();
   }
 
-  findOne(id: string) {
-    const user = this.db.albums.find((a) => a.id === id);
-
-    if (!user) {
-      throw new NotFoundException(`Not found`);
-    }
-
-    return user;
-  }
-
-  create(createAlbumDto: CreateAlbumDto) {
-    const album = new Album(
-      createAlbumDto.name,
-      createAlbumDto.year,
-      createAlbumDto.artistId,
-    );
-
-    this.db.albums.push(album);
-    return album;
-  }
-
-  update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const album = this.db.albums.find((a) => a.id === id);
+  async findOne(id: string) {
+    const album = await this.albumRepository.findOneBy({ id });
 
     if (!album) {
       throw new NotFoundException(`Not found`);
     }
 
-    album.update(updateAlbumDto);
-
     return album;
   }
 
-  remove(id: string) {
-    const idx = this.db.albums.findIndex((a) => a.id === id);
+  async create(createAlbumDto: CreateAlbumDto) {
+    return await this.albumRepository.save(createAlbumDto);
+  }
 
-    if (idx === -1) {
-      throw new NotFoundException(`Not found`);
-    }
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const album = await this.findOne(id);
+    return this.albumRepository.save({ ...album, ...updateAlbumDto });
+  }
 
-    const inFavorites = this.favsService.findOne(id);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.albumRepository.delete(id);
+  }
 
-    if (!inFavorites) {
-      this.favsService.removeAlbum(id);
-    }
-
-    const tracks = this.db.tracks.filter((track) => track.albumId === id);
-    tracks.forEach((track) => {
-      track.albumId = null;
-    });
-
-    this.db.albums.splice(idx, 1);
+  async isExists(id: string) {
+    return await this.albumRepository.findOneBy({ id });
   }
 }

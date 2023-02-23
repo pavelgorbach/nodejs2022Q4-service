@@ -1,18 +1,32 @@
-import { v4 as uuidv4 } from 'uuid';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  Entity,
+  ManyToOne,
+} from 'typeorm';
 
+import { Album } from './../../album/entities/album.entity';
+import { Track } from './../../track/entities/track.entity';
+import { Fav } from './../../favs/entities/fav.entity';
+
+@Entity()
 export class Artist {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
   name: string;
+
+  @Column()
   grammy: boolean;
 
-  constructor(name: string, grammy: boolean) {
-    this.id = uuidv4();
-    this.name = name;
-    this.grammy = grammy;
-  }
+  @OneToMany(() => Album, (album) => album.artist)
+  albums: Album[];
 
-  update(data: Partial<Artist>) {
-    this.name = data.name ?? this.name;
-    this.grammy = data.grammy ?? this.grammy;
-  }
+  @OneToMany(() => Track, (track) => track.artist)
+  tracks: Track[];
+
+  @ManyToOne(() => Fav, (favorites) => favorites.artists)
+  favorites: Fav;
 }

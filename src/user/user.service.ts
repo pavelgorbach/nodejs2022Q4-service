@@ -14,15 +14,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private userRepository: Repository<User>,
   ) {}
 
   async findAll() {
-    return this.usersRepository.find();
+    return this.userRepository.find();
   }
 
   async findOne(id: string) {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user) {
       throw new NotFoundException(`Not found`);
@@ -33,7 +33,7 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto) {
     const user = new User(createUserDto.login, createUserDto.password);
-    await this.usersRepository.insert(user);
+    await this.userRepository.insert(user);
     return user;
   }
 
@@ -45,11 +45,11 @@ export class UserService {
     }
 
     user.password = updateUserDto.newPassword;
-    return this.usersRepository.save(user);
+    return this.userRepository.save(user);
   }
 
   async remove(id: string) {
     const user = await this.findOne(id);
-    return await this.usersRepository.remove(user);
+    return await this.userRepository.remove(user);
   }
 }

@@ -1,20 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { Db } from '../db/db';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TrackService {
-  constructor(private db: Db) {}
+  constructor(
+    @InjectRepository(Track)
+    private trackRepository: Repository<Track>,
+  ) {}
 
-  findAll() {
-    return this.db.tracks;
+  async findAll() {
+    return await this.trackRepository.find();
   }
 
-  findOne(id: string) {
-    const track = this.db.tracks.find((t) => t.id === id);
+  async findOne(id: string) {
+    const track = await this.trackRepository.findOneBy({ id });
 
     if (!track) {
       throw new NotFoundException(`Not found`);
@@ -23,36 +27,21 @@ export class TrackService {
     return track;
   }
 
-  create(createTrackDto: CreateTrackDto) {
-    const track = new Track(
-      createTrackDto.name,
-      createTrackDto.artistId,
-      createTrackDto.albumId,
-      createTrackDto.duration,
-    );
-    this.db.tracks.push(track);
-    return track;
+  async create(createTrackDto: CreateTrackDto) {
+    return await this.trackRepository.save(createTrackDto);
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
-    const track = this.db.tracks.find((t) => t.id === id);
-
-    if (!track) {
-      throw new NotFoundException(`Not found`);
-    }
-
-    track.update(updateTrackDto);
-
-    return track;
+  async update(id: string, updateTrackDto: UpdateTrackDto) {
+    const track = await this.findOne(id);
+    return this.trackRepository.save({ ...track, ...updateTrackDto });
   }
 
-  remove(id: string) {
-    const idx = this.db.tracks.findIndex((t) => t.id === id);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.trackRepository.delete(id);
+  }
 
-    if (idx === -1) {
-      throw new NotFoundException(`Not found`);
-    }
-
-    this.db.tracks.splice(idx, 1);
+  async isExists(id: string) {
+    return await this.trackRepository.findOneBy({ id });
   }
 }
