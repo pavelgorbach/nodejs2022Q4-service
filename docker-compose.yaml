@@ -2,9 +2,9 @@ version: '3.0'
 
 services:
   api:
+    restart: always
     container_name: api
     build: ./
-    restart: always
     ports:
       - ${PORT}:${PORT}
     depends_on:
@@ -13,11 +13,12 @@ services:
       - app-network
     volumes:
       - ./src:/app/src
+      - ./logs:/app/logs
 
   db:
+    restart: always
     container_name: db
     build: ./db
-    restart: always
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:

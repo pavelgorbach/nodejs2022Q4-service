@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,8 +9,9 @@ import { ArtistModule } from './artist/artist.module';
 import { TrackModule } from './track/track.module';
 import { AlbumModule } from './album/album.module';
 import { FavsModule } from './favs/favs.module';
+import { LoggerModule } from './logger/logger.module';
 
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { LoggerMiddleware } from './logger/logger.middleware';
 import { ormconfig } from './ormconfig';
 @Module({
   imports: [
@@ -23,8 +25,13 @@ import { ormconfig } from './ormconfig';
     TrackModule,
     AlbumModule,
     FavsModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
