@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -31,16 +32,29 @@ export class UserService {
     return user;
   }
 
+  async findByLogin(login: string) {
+    return await this.userRepository.findOne({ where: { login } });
+  }
+
   async create(createUserDto: CreateUserDto) {
-    const user = new User(createUserDto.login, createUserDto.password);
-    await this.userRepository.insert(user);
-    return user;
+    const password = await bcrypt.hash(
+      createUserDto.password,
+      +process.env.CRYPT_SALT,
+    );
+
+    const user = new User(createUserDto.login, password);
+    return await this.userRepository.save(user);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
 
-    if (updateUserDto.oldPassword !== user.password) {
+    const passwordsEuqal = await bcrypt.compare(
+      updateUserDto.oldPassword,
+      user.password,
+    );
+
+    if (!passwordsEuqal) {
       throw new ForbiddenException(`Incorrect password`);
     }
 

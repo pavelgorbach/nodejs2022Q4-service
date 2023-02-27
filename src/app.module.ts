@@ -1,4 +1,5 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -10,7 +11,9 @@ import { TrackModule } from './track/track.module';
 import { AlbumModule } from './album/album.module';
 import { FavsModule } from './favs/favs.module';
 import { LoggerModule } from './logger/logger.module';
+import { AuthModule } from './auth/auth.module';
 
+import { JwtGuard } from './auth/auth.guard';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { ormconfig } from './ormconfig';
 @Module({
@@ -26,9 +29,16 @@ import { ormconfig } from './ormconfig';
     AlbumModule,
     FavsModule,
     LoggerModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtGuard,
+    },
+    AppService,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
