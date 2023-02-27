@@ -43,31 +43,28 @@ export class Logger extends ConsoleLogger {
 
   private writeLog(level: LogLevel, message: any, context?: any, stack?: any) {
     const timestamp = new Date().toISOString();
-    const logMessage = `${timestamp} ${level.toUpperCase()} [${context}] ${message} \n`;
+    const logMessage = `${timestamp} ${level.toUpperCase()} [${context}] ${message} \n ${
+      stack ? stack : ''
+    }`;
 
     process.stdout.write(logMessage);
     this.writeFile(level, logMessage);
   }
 
   private async writeFile(level: LogLevel, message: any) {
-    console.log('WRITE FILE');
-
     const filePath = path.join(
       process.cwd(),
       'logs',
       `${this.fileVersion}-${level === 'error' ? 'error' : 'log'}.log`,
     );
 
-    console.log('FILEPATH', filePath);
+    await appendFile(filePath, message + '\n');
 
-    // const statFile = await stat(filePath);
-    // const isOverSize = statFile.size >= LOG_FILE_SIZE;
+    const statFile = await stat(filePath);
+    const isOverSize = statFile.size >= LOG_FILE_SIZE;
 
-    // if (isOverSize) {
-    //   console.log('over size');
-    //   this.fileVersion = Date.now();
-    // }
-
-    // await appendFile(filePath, message + '\n');
+    if (isOverSize) {
+      this.fileVersion = Date.now();
+    }
   }
 }
