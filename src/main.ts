@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -8,6 +8,7 @@ import 'dotenv/config';
 
 import { AppModule } from './app.module';
 import { Logger } from './logger/logger.service';
+import { CustomExceptionFilter } from './exception/exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -21,6 +22,9 @@ async function bootstrap() {
 
   const logger = app.get(Logger);
   app.useLogger(logger);
+
+  const httpAdapter = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new CustomExceptionFilter(httpAdapter, logger));
 
   process.on('uncaughtException', (e) => {
     logger.error(`Uncaught Exception: ${e.message}`);
