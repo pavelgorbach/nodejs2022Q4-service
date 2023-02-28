@@ -10,7 +10,7 @@
 
 1. clone repo: `git clone https://github.com/pavelgorbach/nodejs2022Q4-service.git`
 2. go to project forlder: `cd nodejs2022Q4-service.git`
-3. checkout to postgre-orm branch `git checkout postgre-orm`
+3. checkout to postgre-orm branch `git checkout auth-log-err`
 4. install dependencies `npm install`
 5. run app with docker `npm run docker`
 
@@ -34,5 +34,5 @@ npm run test:auth
 To run only one of all test suites
 
 ```
-npm run test -- <path to suite>
+npm run test:auth -- <path to suite>
 ```
