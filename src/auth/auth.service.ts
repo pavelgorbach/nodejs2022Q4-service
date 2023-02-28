@@ -28,13 +28,11 @@ export class AuthService {
       );
 
       if (user && isPasswordEquals) {
-        return user;
+        return this.sign(user.id, user.login);
       }
     } else {
       throw new ForbiddenException({ message: 'Invalid data' });
     }
-
-    return this.sign(user.id, user.login);
   }
 
   private sign(userId: string, login: string) {

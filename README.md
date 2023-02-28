@@ -28,7 +28,7 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 To run all tests 
 
 ```
-npm run test
+npm run test:auth
 ```
 
 To run only one of all test suites
